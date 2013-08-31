@@ -1,14 +1,17 @@
-namespace fetch(:scm, :git) do
-  task :check do
-    invoke "rsync:check"
-  end
-
-  task :create_release do
-    invoke "rsync:create_release"
-  end
-end
+Rake::Task["deploy:check"].enhance ["rsync:hook_scm"]
+Rake::Task["deploy:updating"].enhance ["rsync:hook_scm"]
 
 namespace :rsync do
+  task :hook_scm do
+    Rake::Task.define_task("#{scm}:check") do
+      invoke "rsync:check" 
+    end
+
+    Rake::Task.define_task("#{scm}:create_release") do
+      invoke "rsync:create_release" 
+    end
+  end
+
   task :check do
     # Everything's a-okay inherently!
   end
