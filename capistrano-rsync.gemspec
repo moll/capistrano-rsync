@@ -27,4 +27,6 @@ Gem::Specification.new do |gem|
   gem.executables = gem.files.grep(/^bin\//).map(&File.method(:basename))
   gem.test_files = gem.files.grep(/^spec\//)
   gem.require_paths = ["lib"]
+
+  gem.add_dependency "capistrano", ">= 3.0.0.pre14", "< 4"
 end
