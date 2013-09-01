@@ -1,4 +1,4 @@
-# Unreleased
+# 0.2.1 (Sep 1, 2013)
 - Fixes starting with no previous local repository cache.  
   Note to self: Avoid writing code without integration tests.
 
