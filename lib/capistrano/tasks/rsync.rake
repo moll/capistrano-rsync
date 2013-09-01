@@ -38,10 +38,13 @@ namespace :rsync do
   desc "Copy the repository to the releases directory."
   task :create_release => %w[update_stage] do
     roles(:all).each do |role|
+      user = role.user + "@" if !role.user.nil?
+
       rsync = %w[rsync]
       rsync.concat fetch(:rsync_options)
       rsync << fetch(:rsync_stage) + "/"
-      rsync << "#{role}:#{release_path}"
+      rsync << "#{user}#{role.hostname}:#{release_path}"
+
       Kernel.system *rsync
     end
   end

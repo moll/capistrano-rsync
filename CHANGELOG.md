@@ -1,3 +1,6 @@
+# Unreleased
+- Pass user given in `role :app, "user@host"` to `rsync` if set.
+
 # 0.1.338 (Sep 1, 2013)
 - Adds gem dependency on Capistrano v3.
 
