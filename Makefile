@@ -7,6 +7,6 @@ pack:
 	gem build $(NAME).gemspec
 
 publish:
-	gem publish $(NAME)-*.gem
+	gem push $(NAME)-*.gem
 	
 .PHONY: love pack publish
