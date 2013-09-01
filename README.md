@@ -84,6 +84,6 @@ For more convoluted language, see the `LICENSE` file.
 About
 -----
 **[Andri Möll](http://themoll.com)** made this happen.  
-[Monday Calendar](http://mondayapp.com) was the reason I needed this.
+[Monday Calendar](https://mondayapp.com) was the reason I needed this.
 
 If you find Capistrano::Rsync needs improving, please don't hesitate to type to me now at [andri@dot.ee](mailto:andri@dot.ee) or [create an issue online](https://github.com/moll/capistrano-rsync/issues).
