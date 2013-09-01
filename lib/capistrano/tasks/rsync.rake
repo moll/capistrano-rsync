@@ -19,7 +19,7 @@ namespace :rsync do
   task :create_stage do
     next if File.directory?(fetch(:rsync_stage))
 
-    clone = %W[git clone --mirror]
+    clone = %W[git clone]
     clone << fetch(:repo_url, ".")
     clone << fetch(:rsync_stage)
     Kernel.system *clone
@@ -27,10 +27,10 @@ namespace :rsync do
 
   task :update_stage => %w[create_stage] do
     Dir.chdir fetch(:rsync_stage) do
-      update = %W[git remote update]
+      update = %W[git fetch --quiet --all --prune]
       Kernel.system *update
 
-      checkout = %W[git reset --hard #{fetch(:branch)}]
+      checkout = %W[git reset --hard origin/#{fetch(:branch)}]
       Kernel.system *checkout
     end
   end

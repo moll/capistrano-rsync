@@ -1,5 +1,9 @@
+# Unreleased
+- Fixes starting with no previous local repository cache.  
+  Note to self: Avoid writing code without integration tests.
+
 # 0.2.0 (Sep 1, 2013)
-- Pass user given in `role :app, "user@host"` to `rsync` if set.
+- Passes user given in `role :app, "user@host"` to `rsync` if set.
 
 # 0.1.338 (Sep 1, 2013)
 - Adds gem dependency on Capistrano v3.
