@@ -48,8 +48,8 @@ set :rsync_options, %w[
 ```
 
 
-Variables
----------
+Configuration
+-------------
 Set Capistrano variables with `set name, value`.
 
 #### branch
