@@ -1,4 +1,4 @@
-# Unreleased
+# 0.2.0 (Sep 1, 2013)
 - Pass user given in `role :app, "user@host"` to `rsync` if set.
 
 # 0.1.338 (Sep 1, 2013)
