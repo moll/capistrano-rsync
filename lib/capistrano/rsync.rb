@@ -80,7 +80,7 @@ namespace :rsync do
     next if !fetch(:rsync_cache)
 
     copy = %(#{fetch(:rsync_copy)} "#{rsync_cache.call}/" "#{release_path}/")
-    on roles(:all).each do within(deploy_path) { execute copy } end
+    on roles(:all).each do execute copy end
   end
 
   # Matches the naming scheme of git tasks.
