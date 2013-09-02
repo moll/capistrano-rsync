@@ -39,7 +39,7 @@ cap deploy
 ### Implementation
 Capistrano::Rsync clones your repository to `tmp/cache` on your local machine, checks out the branch set in the `branch` variable (`master` by default) and then Rsyncs that directory to your servers.
 
-### Excluding files from being deployed
+### Exclude files from being deployed
 If you don't want to deploy everything you've committed to your repository, pass some `--exclude` options to Rsync:
 ```ruby
 set :rsync_options, %w[
@@ -50,7 +50,7 @@ set :rsync_options, %w[
 ]
 ```
 
-### Precompiling assets before deploy
+### Precompile assets before deploy
 Capistrano::Rsync runs `rsync:stage` before rsyncing. Hook to that like this:
 ```ruby
 task :precompile do
@@ -60,6 +60,11 @@ task :precompile do
 end
 
 after "rsync:stage", "precompile"
+```
+
+### Deploy release without symlinking the current directory
+```
+cap rsync:release
 ```
 
 

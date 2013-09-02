@@ -74,7 +74,7 @@ namespace :rsync do
     end
   end
 
-  desc "Copy the stage to the releases directory."
+  desc "Copy the code to the releases directory."
   task :release => %w[rsync] do
     # Skip copying if we've already synced straight to the release directory.
     next if !fetch(:rsync_cache)
