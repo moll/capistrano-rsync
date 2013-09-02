@@ -1,4 +1,4 @@
-## Unreleased
+## 1.0.1 (Sep 2, 2013)
 - Updates README and adds implementation details to it.
 
 ## 1.0.0 (Sep 2, 2013)
