@@ -1,5 +1,6 @@
 ## Unreleased
 - Makes the `rsync:stage` task public for extending and hooking.
+- Rename `rsync:create_release` to `rsync:release`. Old name still works.
 
 ## 0.2.1 (Sep 1, 2013)
 - Fixes starting with no previous local repository cache.  

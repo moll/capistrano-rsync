@@ -13,7 +13,7 @@ namespace :rsync do
     end
 
     Rake::Task.define_task("#{scm}:create_release") do
-      invoke "rsync:create_release" 
+      invoke "rsync:release" 
     end
   end
 
@@ -42,7 +42,7 @@ namespace :rsync do
   end
 
   desc "Copy the staged repository to the releases directory."
-  task :create_release => %w[stage] do
+  task :release => %w[stage] do
     roles(:all).each do |role|
       user = role.user + "@" if !role.user.nil?
 
@@ -54,4 +54,8 @@ namespace :rsync do
       Kernel.system *rsync
     end
   end
+
+  # Matches the naming scheme of git tasks.
+  # Plus was part of the public API in Capistrano::Rsync <= v0.2.1.
+  task :create_release => %w[release]
 end
