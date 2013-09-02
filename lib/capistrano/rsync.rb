@@ -1,15 +1,43 @@
 require File.expand_path("../rsync/version", __FILE__)
 
-set :rsync_stage, "tmp/deploy"
-set :rsync_options, []
-
-Rake::Task["deploy:check"].enhance ["rsync:hook_scm"]
-Rake::Task["deploy:updating"].enhance ["rsync:hook_scm"]
-
 # NOTE: Please don't depend on tasks without a description (`desc`) remaining
 # as they are between minor or patch version releases. They make up the private
 # API and internalas of Capistrano::Rsync. If you think something should be
 # public for extending, please let me know!
+
+set :rsync_options, []
+set :rsync_copy, "rsync --archive --acls --xattrs"
+
+# Stage is used on your local machine for rsyncing from.
+set :rsync_stage, "tmp/deploy"
+
+# Cache is used on the server to copy files to from to the release directory.
+# Saves you rsyncing your whole app folder each time.  If you nil rsync_cache,
+# Capistrano::Rsync will sync straight to the release path.
+set :rsync_cache, "shared/deploy"
+
+rsync_cache = lambda do
+  cache = fetch(:rsync_cache)
+  cache = deploy_to + "/" + cache if cache && cache !~ /^\//
+  cache
+end
+
+Rake::Task["deploy:check"].enhance ["rsync:hook_scm"]
+Rake::Task["deploy:updating"].enhance ["rsync:hook_scm"]
+
+desc "Stage and rsync to the server (or its cache)."
+task :rsync => %w[rsync:stage] do
+  roles(:all).each do |role|
+    user = role.user + "@" if !role.user.nil?
+
+    rsync = %w[rsync]
+    rsync.concat fetch(:rsync_options)
+    rsync << fetch(:rsync_stage) + "/"
+    rsync << "#{user}#{role.hostname}:#{rsync_cache.call || release_path}"
+
+    Kernel.system *rsync
+  end
+end
 
 namespace :rsync do
   task :hook_scm do
@@ -46,18 +74,13 @@ namespace :rsync do
     end
   end
 
-  desc "Copy the staged repository to the releases directory."
-  task :release => %w[stage] do
-    roles(:all).each do |role|
-      user = role.user + "@" if !role.user.nil?
+  desc "Copy the stage to the releases directory."
+  task :release => %w[rsync] do
+    # Skip copying if we've already synced straight to the release directory.
+    next if !fetch(:rsync_cache)
 
-      rsync = %w[rsync]
-      rsync.concat fetch(:rsync_options)
-      rsync << fetch(:rsync_stage) + "/"
-      rsync << "#{user}#{role.hostname}:#{release_path}"
-
-      Kernel.system *rsync
-    end
+    copy = %(#{fetch(:rsync_copy)} "#{rsync_cache.call}/" "#{release_path}/")
+    on roles(:all).each do within(deploy_path) { execute copy } end
   end
 
   # Matches the naming scheme of git tasks.
