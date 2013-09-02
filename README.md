@@ -3,7 +3,7 @@ Capistrano::Rsync for Capistrano v3
 [![Gem version](https://badge.fury.io/rb/capistrano-rsync.png)](http://badge.fury.io/rb/capistrano-rsync)
 
 **Deploy with Rsync** to your server from any local (or remote) repository when using [**Capistrano**](http://www.capistranorb.com/).  
-Saves you from having to install Git on your production machine and allows you to customize which files you want to deploy. Allows also you to easily precompile things on your local machine before deploying.
+Saves you from having to install Git on your production machine and allows you to customize which files you want to deploy. Also allows you to easily precompile things on your local machine before deploying.
 
 ### Tour
 - Works with the new [**Capistrano v3**](http://www.capistranorb.com/) ([source code](https://github.com/capistrano/capistrano)) versions `>= 3.0.0pre14` and `< 4`.
@@ -21,7 +21,7 @@ Install with:
 gem install capistrano-rsync
 ```
 
-Require it at the top of your `Capfile` or `config/deploy.rb`:
+Require it at the top of your `Capfile` (or `config/deploy.rb`):
 ```ruby
 require "capistrano/rsync"
 ```
@@ -37,7 +37,13 @@ cap deploy
 ```
 
 ### Implementation
-Capistrano::Rsync clones your repository to `tmp/cache` on your local machine, checks out the branch set in the `branch` variable (`master` by default) and then Rsyncs that directory to your servers.
+1. Clones and updates your repository to `rsync_stage` (defaults to `tmp/deploy`) on your local machine.
+2. Checks out the branch set in the `branch` variable (defaults to `master`).
+3. If `rsync_cache` set (defaults to `shared/deploy`), rsyncs to that directory  on the server.
+4. If `rsync_cache` set, copies the content of that directory to a new release directory.
+5. If `rsync_cache` is `nil`, rsyncs straight to a new release directory.
+
+After that, Capistrano takes over and runs its usual tasks and symlinking.
 
 ### Exclude files from being deployed
 If you don't want to deploy everything you've committed to your repository, pass some `--exclude` options to Rsync:
@@ -74,8 +80,8 @@ Set Capistrano variables with `set name, value`.
 
 Name          | Default | Description
 --------------|---------|------------
-branch        | `master` | The Git branch to checkout.  
 repo_url      | `.` | The path or URL to a Git repository to clone from.  
+branch        | `master` | The Git branch to checkout.  
 rsync_stage   | `tmp/deploy` | Path where to clone your repository for staging, checkouting and rsyncing. Can be both relative or absolute.
 rsync_cache   | `shared/deploy` | Path where to cache your repository on the server to avoid rsyncing from scratch each time. Can be both relative or absolute.<br> Set to `nil` if you want to disable the cache.
 rsync_options | `[]` | Array of options to pass to `rsync`.  

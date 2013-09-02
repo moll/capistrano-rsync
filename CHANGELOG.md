@@ -1,3 +1,6 @@
+## Unreleased
+- Updates README and adds implementation details to it.
+
 ## 1.0.0 (Sep 2, 2013)
 - Makes the `rsync:stage` task public for extending and hooking.
 - Renames `rsync:create_release` to `rsync:release`. Old name still works.
