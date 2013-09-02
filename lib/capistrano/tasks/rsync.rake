@@ -1,6 +1,11 @@
 Rake::Task["deploy:check"].enhance ["rsync:hook_scm"]
 Rake::Task["deploy:updating"].enhance ["rsync:hook_scm"]
 
+# NOTE: Please don't depend on tasks without a description (`desc`) remaining
+# as they are between minor or patch version releases. They make up the private
+# API and internalas of Capistrano::Rsync. If you think something should be
+# public for extending, please let me know!
+
 namespace :rsync do
   task :hook_scm do
     Rake::Task.define_task("#{scm}:check") do
@@ -25,7 +30,8 @@ namespace :rsync do
     Kernel.system *clone
   end
 
-  task :update_stage => %w[create_stage] do
+  desc "Stage the repository in a local directory."
+  task :stage => %w[create_stage] do
     Dir.chdir fetch(:rsync_stage) do
       update = %W[git fetch --quiet --all --prune]
       Kernel.system *update
@@ -35,8 +41,8 @@ namespace :rsync do
     end
   end
 
-  desc "Copy the repository to the releases directory."
-  task :create_release => %w[update_stage] do
+  desc "Copy the staged repository to the releases directory."
+  task :create_release => %w[stage] do
     roles(:all).each do |role|
       user = role.user + "@" if !role.user.nil?
 
