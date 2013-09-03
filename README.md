@@ -13,6 +13,8 @@ Saves you from having to install Git on your production machine and allows you t
 - Caches your previously deployed code to speed up deployments ~1337%.
 - Currently works only with Git (as does Capistrano v3), so please shout out your interest in other SCMs.
 
+Using [Mina](http://nadarei.co/mina/) instead of Capistrano? I've built [Mina::Rsync](https://github.com/moll/mina-rsync) as well.
+
 
 Using
 -----
