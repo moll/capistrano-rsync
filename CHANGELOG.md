@@ -1,3 +1,6 @@
+## 1.0.2 (Oct 13, 2013)
+- Updates README and code comments.
+
 ## 1.0.1 (Sep 2, 2013)
 - Updates README and adds implementation details to it.
 
