@@ -13,7 +13,7 @@ machine before deploying.
 - Works with the new [**Capistrano v3**](http://www.capistranorb.com/) ([source
   code](https://github.com/capistrano/capistrano)) versions `>= 3.0.0pre14` and
   `< 4`.
-- Suitable for deploying any apps, be it Ruby, Rails, Node.js or others.  
+- Suitable for deploying any apps, be it Ruby, Rails, Node.js or others.
 - Exclude files from being deployed with Rsync's `--exclude` options.
 - Precompile files or assets easily before deploying, like JavaScript or CSS.
 - Caches your previously deployed code to speed up deployments ~1337%.
@@ -65,6 +65,7 @@ some `--exclude` options to Rsync:
 set :rsync_options, %w[
   --recursive --delete --delete-excluded
   --exclude .git*
+  --exclude .svn*
   --exclude /config/database.yml
   --exclude /test/***
 ]
@@ -94,11 +95,12 @@ Set Capistrano variables with `set name, value`.
 
 Name          | Default | Description
 --------------|---------|------------
-repo_url      | `.` | The path or URL to a Git repository to clone from.  
-branch        | `master` | The Git branch to checkout.  
+rsync_scm     | `git`   | Available options: `git`, `svn`.
+repo_url      | `.` | The path or URL to a SCM repository to clone from.
+branch        | `master` | The Git branch to checkout. This is ignored for Svn.
 rsync_stage   | `tmp/deploy` | Path where to clone your repository for staging, checkouting and rsyncing. Can be both relative or absolute.
 rsync_cache   | `shared/deploy` | Path where to cache your repository on the server to avoid rsyncing from scratch each time. Can be both relative or absolute.<br> Set to `nil` if you want to disable the cache.
-rsync_options | `[]` | Array of options to pass to `rsync`.  
+rsync_options | `[]` | Array of options to pass to `rsync`.
 
 
 License
@@ -117,7 +119,7 @@ For more convoluted language, see the `LICENSE` file.
 
 About
 -----
-**[Andri Möll](http://themoll.com)** made this happen.  
+**[Andri Möll](http://themoll.com)** made this happen.
 [Monday Calendar](https://mondayapp.com) was the reason I needed this.
 
 If you find Capistrano::Rsync needs improving, please don't hesitate to type to
