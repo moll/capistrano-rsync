@@ -72,7 +72,7 @@ namespace :rsync do
       checkout = %W[git reset --hard origin/#{fetch(:branch)}]
       Kernel.system *checkout
 
-      last_commit_id = `git rev-parse HEAD`
+      last_commit_id = `git rev-parse --short HEAD`
       set :current_revision, "#{last_commit_id}".chomp
     end
   end
