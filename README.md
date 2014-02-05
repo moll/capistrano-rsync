@@ -31,11 +31,6 @@ Install with:
 gem install capistrano-rsync
 ```
 
-Require it at the top of your `Capfile` (or `config/deploy.rb`):
-```ruby
-require "capistrano/rsync"
-```
-
 Set some `rsync_options` to your liking:
 ```ruby
 set :rsync_options, %w[--recursive --delete --delete-excluded --exclude .git*]
