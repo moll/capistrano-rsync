@@ -27,7 +27,7 @@ Rake::Task["deploy:updating"].enhance ["rsync:hook_scm"]
 
 desc "Stage and rsync to the server (or its cache)."
 task :rsync => %w[rsync:stage] do
-  roles(:all).each do |role|
+  release_roles(:all).each do |role|
     user = role.user + "@" if !role.user.nil?
 
     rsync = %w[rsync]
@@ -80,7 +80,7 @@ namespace :rsync do
     next if !fetch(:rsync_cache)
 
     copy = %(#{fetch(:rsync_copy)} "#{rsync_cache.call}/" "#{release_path}/")
-    on roles(:all).each do execute copy end
+    on release_roles(:all).each do execute copy end
   end
 
   # Matches the naming scheme of git tasks.
