@@ -41,12 +41,19 @@ end
 
 namespace :rsync do
   task :hook_scm do
+    Rake::Task["#{scm}:check"].clear
     Rake::Task.define_task("#{scm}:check") do
       invoke "rsync:check" 
     end
 
+    Rake::Task["#{scm}:create_release"].clear
     Rake::Task.define_task("#{scm}:create_release") do
       invoke "rsync:release" 
+    end
+
+    Rake::Task["#{scm}:set_current_revision"].clear
+    Rake::Task.define_task("#{scm}:set_current_revision") do
+      p "Revision: #{fetch(:current_revision)}" 
     end
   end
 
@@ -71,6 +78,9 @@ namespace :rsync do
 
       checkout = %W[git reset --hard origin/#{fetch(:branch)}]
       Kernel.system *checkout
+
+      get_current_revision =  %x[git rev-parse HEAD]
+      set(:current_revision, get_current_revision)
     end
   end
 
