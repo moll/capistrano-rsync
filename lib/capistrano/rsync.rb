@@ -41,12 +41,19 @@ end
 
 namespace :rsync do
   task :hook_scm do
+    Rake::Task["#{scm}:check"].clear
     Rake::Task.define_task("#{scm}:check") do
       invoke "rsync:check" 
     end
 
+    Rake::Task["#{scm}:create_release"].clear
     Rake::Task.define_task("#{scm}:create_release") do
       invoke "rsync:release" 
+    end
+
+    Rake::Task["#{scm}:set_current_revision"].clear
+    Rake::Task.define_task("#{scm}:set_current_revision") do
+      # :current_revision was already set during checkout 
     end
   end
 
@@ -73,6 +80,16 @@ namespace :rsync do
       Kernel.system *checkout
     end
   end
+
+  desc "Set current revision into capistrano variable"
+  task :set_current_revision do
+    Dir.chdir fetch(:rsync_stage) do
+      get_current_revision =  %x[git rev-parse HEAD]
+      set(:current_revision, get_current_revision)
+    end
+  end
+
+  after :stage, :set_current_revision
 
   desc "Copy the code to the releases directory."
   task :release => %w[rsync] do
