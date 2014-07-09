@@ -85,8 +85,10 @@ namespace :rsync do
 
   desc "Set current revision into capistrano variable"
   task :set_current_revision do
-    get_current_revision =  %x[git rev-parse HEAD]
-    set(:current_revision, get_current_revision)    
+    Dir.chdir fetch(:rsync_stage) do
+      get_current_revision =  %x[git rev-parse HEAD]
+      set(:current_revision, get_current_revision)
+    end
   end
 
   desc "Copy the code to the releases directory."
