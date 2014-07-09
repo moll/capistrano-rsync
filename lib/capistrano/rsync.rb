@@ -81,8 +81,6 @@ namespace :rsync do
     end
   end
 
-  after :stage, :set_current_revision
-
   desc "Set current revision into capistrano variable"
   task :set_current_revision do
     Dir.chdir fetch(:rsync_stage) do
@@ -90,6 +88,8 @@ namespace :rsync do
       set(:current_revision, get_current_revision)
     end
   end
+
+  after :stage, :set_current_revision
 
   desc "Copy the code to the releases directory."
   task :release => %w[rsync] do
