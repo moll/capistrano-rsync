@@ -5,7 +5,6 @@ require File.expand_path("../rsync/version", __FILE__)
 # private API and internals of Capistrano::Rsync. If you think something should
 # be public for extending and hooking, please let me know!
 
-set :rsync_options, []
 set :rsync_copy, "rsync --archive --acls --xattrs"
 
 # Stage is used on your local machine for rsyncing from.
@@ -31,7 +30,7 @@ task :rsync => %w[rsync:stage] do
     user = role.user + "@" if !role.user.nil?
 
     rsync = %w[rsync]
-    rsync.concat fetch(:rsync_options)
+    rsync.concat fetch(:rsync_options, [])
     rsync << fetch(:rsync_stage) + "/"
     rsync << "#{user}#{role.hostname}:#{rsync_cache.call || release_path}"
 
