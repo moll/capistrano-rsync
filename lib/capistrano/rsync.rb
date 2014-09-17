@@ -69,7 +69,7 @@ namespace :rsync do
       update = %W[git fetch --quiet --all --prune]
       Kernel.system *update
 
-      checkout = %W[git reset --hard origin/#{fetch(:branch)}]
+      checkout = %W[git reset --hard #{fetch(:branch)}]
       Kernel.system *checkout
     end
   end
