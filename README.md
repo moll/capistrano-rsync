@@ -41,6 +41,11 @@ Set some `rsync_options` to your liking:
 set :rsync_options, %w[--recursive --delete --delete-excluded --exclude .git*]
 ```
 
+Ensure to set `scm` to :rsync in your deploy.rb:
+```ruby
+set :scm, :rsync
+```
+
 And after setting regular Capistrano options, deploy as usual!
 ```
 cap deploy
