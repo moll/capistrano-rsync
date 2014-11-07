@@ -5,6 +5,10 @@ module Capistrano
       class Svn < Capistrano::Rsync::Scm::Base
         attr_reader :context
 
+        def get_current_revision_cmd
+          "svn info | grep '^Revision:' | sed -e 's/^Revision: //'"
+        end
+
         def create_stage_cmds
           cmd = []
 

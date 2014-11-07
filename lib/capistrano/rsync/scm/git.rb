@@ -5,6 +5,10 @@ module Capistrano
       class Git < Capistrano::Rsync::Scm::Base
         attr_reader :context
 
+        def get_current_revision_cmd
+          %W[git rev-parse HEAD]
+        end
+
         def create_stage_cmds
           cmd = []
           clone = %W[git clone]

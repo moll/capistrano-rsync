@@ -56,6 +56,17 @@ namespace :rsync do
     set :rsync_cache, "shared/deploy"
   end
 
+  # internally needed by capistrano's "deploy.rake"
+  task :set_current_revision do
+    run_locally do
+      within fetch(:rsync_stage) do
+        cmd = scm_instance.call.get_current_revision_cmd
+        rev = capture cmd
+        set :current_revision, rev
+      end
+    end
+  end
+
   task :hook_scm do
     Rake::Task.define_task("#{scm}:check") do
       invoke "rsync:check"

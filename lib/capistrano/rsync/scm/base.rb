@@ -11,6 +11,11 @@ module Capistrano
           @context = context
         end
 
+        # Returns command to obtain the current revision
+        def get_current_revision_cmd
+          throw NotImplementedError
+        end
+
         # Returns array of commands required to create the stage respository.
         # Skipped if rsync_stage directory already exists.
         def create_stage_cmds
