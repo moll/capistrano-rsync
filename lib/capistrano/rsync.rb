@@ -58,12 +58,10 @@ namespace :rsync do
 
   # internally needed by capistrano's "deploy.rake"
   task :set_current_revision do
-    run_locally do
-      within fetch(:rsync_stage) do
-        cmd = scm_instance.call.get_current_revision_cmd
-        rev = capture cmd
-        set :current_revision, rev
-      end
+    Dir.chdir fetch(:rsync_stage) do
+      cmd = scm_instance.call.get_current_revision_cmd
+      rev = `#{cmd}`
+      set :current_revision, rev
     end
   end
 
