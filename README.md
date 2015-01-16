@@ -36,6 +36,12 @@ Require it at the top of your `Capfile` (or `config/deploy.rb`):
 require "capistrano/rsync"
 ```
 
+Override the default scm-tasks:
+```ruby
+set :scm, :rsync
+set :rsync_scm, :git
+```
+
 Set some `rsync_options` to your liking:
 ```ruby
 set :rsync_options, %w[--recursive --delete --delete-excluded --exclude .git*]
