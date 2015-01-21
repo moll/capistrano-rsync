@@ -5,21 +5,26 @@ require File.expand_path("../rsync/version", __FILE__)
 # private API and internals of Capistrano::Rsync. If you think something should
 # be public for extending and hooking, please let me know!
 
-set :rsync_options, []
-set :rsync_copy, "rsync --archive --acls --xattrs"
-
-# Stage is used on your local machine for rsyncing from.
-set :rsync_stage, "tmp/deploy"
-
-# Cache is used on the server to copy files to from to the release directory.
-# Saves you rsyncing your whole app folder each time.  If you nil rsync_cache,
-# Capistrano::Rsync will sync straight to the release path.
-set :rsync_cache, "shared/deploy"
-
 rsync_cache = lambda do
   cache = fetch(:rsync_cache)
   cache = deploy_to + "/" + cache if cache && cache !~ /^\//
   cache
+end
+
+# Use cap3's load:defaults to set default vars so that they can be overridden.
+namespace :load do
+  task :defaults do
+    set :rsync_options, []
+    set :rsync_copy, "rsync --archive --acls --xattrs"
+
+    # Stage is used on your local machine for rsyncing from.
+    set :rsync_stage, "tmp/deploy"
+
+    # Cache is used on the server to copy files to from to the release directory.
+    # Saves you rsyncing your whole app folder each time.  If you nil rsync_cache,
+    # Capistrano::Rsync will sync straight to the release path.
+    set :rsync_cache, "shared/deploy"
+  end
 end
 
 Rake::Task["deploy:check"].enhance ["rsync:hook_scm"]
@@ -27,26 +32,29 @@ Rake::Task["deploy:updating"].enhance ["rsync:hook_scm"]
 
 desc "Stage and rsync to the server (or its cache)."
 task :rsync => %w[rsync:stage] do
-  roles(:all).each do |role|
-    user = role.user + "@" if !role.user.nil?
+  on roles(:all), in: :parallel do |host|
+    user = host.user + "@" if !host.user.nil?
+    port = host.port
 
-    rsync = %w[rsync]
-    rsync.concat fetch(:rsync_options)
-    rsync << fetch(:rsync_stage) + "/"
-    rsync << "#{user}#{role.hostname}:#{rsync_cache.call || release_path}"
-
-    Kernel.system *rsync
+    run_locally do
+      rsynccmd = []
+      rsynccmd.concat(fetch(:rsync_options))
+      rsynccmd << fetch(:rsync_stage) + "/"
+      rsynccmd << "-e \'ssh -p #{port}\'" if port
+      rsynccmd << "#{user}#{host.hostname}:#{rsync_cache.call || release_path}"
+      execute :rsync, rsynccmd.join(" ")
+    end
   end
 end
 
 namespace :rsync do
   task :hook_scm do
     Rake::Task.define_task("#{scm}:check") do
-      invoke "rsync:check" 
+      invoke "rsync:check"
     end
 
     Rake::Task.define_task("#{scm}:create_release") do
-      invoke "rsync:release" 
+      invoke "rsync:release"
     end
   end
 
@@ -57,20 +65,18 @@ namespace :rsync do
   task :create_stage do
     next if File.directory?(fetch(:rsync_stage))
 
-    clone = %W[git clone]
-    clone << fetch(:repo_url, ".")
-    clone << fetch(:rsync_stage)
-    Kernel.system *clone
+    run_locally do
+      execute :git, "clone #{fetch(:repo_url, '.')} #{fetch(:rsync_stage)}";
+    end
   end
 
   desc "Stage the repository in a local directory."
   task :stage => %w[create_stage] do
-    Dir.chdir fetch(:rsync_stage) do
-      update = %W[git fetch --quiet --all --prune]
-      Kernel.system *update
-
-      checkout = %W[git reset --hard origin/#{fetch(:branch)}]
-      Kernel.system *checkout
+    run_locally do
+      within fetch(:rsync_stage) do
+        execute :git, "fetch --quiet --all --prune"
+        execute :git, "reset --hard origin/#{fetch(:branch)}"
+      end
     end
   end
 
@@ -86,4 +92,14 @@ namespace :rsync do
   # Matches the naming scheme of git tasks.
   # Plus was part of the public API in Capistrano::Rsync <= v0.2.1.
   task :create_release => %w[release]
+
+  desc "Set the current revision"
+  task :set_current_revision do
+    run_locally do
+      within fetch(:rsync_stage) do
+        rev = capture(:git, 'rev-parse', '--short', 'HEAD')
+        set :current_revision, rev
+      end
+    end
+  end
 end
