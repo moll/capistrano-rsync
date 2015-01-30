@@ -35,7 +35,7 @@ task :rsync => %w[rsync:stage] do
     rsync << fetch(:rsync_stage) + "/"
     rsync << "#{user}#{role.hostname}:#{rsync_cache.call || release_path}"
 
-    Kernel.system *rsync
+    Kernel.system *rsync.join(' ')
   end
 end
 
