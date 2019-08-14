@@ -1,4 +1,4 @@
-require File.expand_path("../lib/capistrano/rsync/version", __FILE__)
+require_relative 'lib/capistrano/rsync/version'
 
 Gem::Specification.new do |gem|
   gem.name = "capistrano-rsync"
@@ -28,5 +28,5 @@ Gem::Specification.new do |gem|
   gem.test_files = gem.files.grep(/^spec\//)
   gem.require_paths = ["lib"]
 
-  gem.add_dependency "capistrano", ">= 3.0.0.pre14", "< 4"
+  gem.add_dependency "capistrano", "~> 3.7"
 end
